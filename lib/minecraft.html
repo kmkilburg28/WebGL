@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<title>Minecraft</title>
+	</head>
+	<body>
+		<canvas id="theCanvas" width="600" height="400">
+			Please use a browser that supports "canvas"
+		</canvas>
+
+		<p>
+			Keyboard controls:
+			<ul style="list-style:none;">
+				<li>w - forward</li>
+				<li>s - backward</li>
+				<li>a - left</li>
+				<li>d - right</li>
+				<li>space - up</li>
+				<li>shift - down</li>
+				<li>mouse - rotate view</li>
+				<li>f - turn off hand light</li>
+				<li>escape - pause</li>
+				<li>enter - resume</li>
+			</ul>
+		</p>
+
+		<script id="tintVertexShader" type="x-shader/x-vertex">			
+			varying vec2 fTexCoord;
+
+			void main()
+			{
+				fTexCoord = uv;
+				vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+				gl_Position = projectionMatrix * mvPosition;
+			}
+		</script>
+	
+		<script id="tintFragmentShader" type="x-shader/x-fragment">
+			precision mediump float;
+
+			uniform vec3 tintColor;
+			uniform sampler2D tSamplerBase;
+			uniform sampler2D tSamplerOverlay;
+			
+			varying vec2 fTexCoord;
+	
+			void main()
+			{
+				vec3 color;
+				vec4 baseColor = texture2D(tSamplerBase, fTexCoord);
+				vec4 overlayColor = texture2D(tSamplerOverlay, fTexCoord);
+				color = tintColor * overlayColor.rgb * overlayColor.a + baseColor.rgb * baseColor.a * (1.0 - overlayColor.a);
+				gl_FragColor = vec4(color, 1.0);
+			}
+		</script>
+
+		<script src="http://threejs.org/build/three.min.js"></script>
+		<script src="../three/OBJLoader.js"></script>
+		<script src="../three/MTLLoader.js"></script>
+		<script src="ObjectData.js"></script>
+		<script src="ObjectType.js"></script>
+		<script src="data.js"></script>
+		<script src="minecraft.js"></script>
+		<script>window.onload = start</script>
+	</body>
+</html>
